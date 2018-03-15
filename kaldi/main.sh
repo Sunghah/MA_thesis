@@ -53,6 +53,9 @@ for part in dev-clean test-clean dev-other test-other train-clean-100; do
     $data/LibriSpeech/$part data/$(echo $part | sed s/-/_/g)
 done
 
+cut -d' ' -f2- data/train_clean_100/text | \
+  sed 's/\ /\n/g' | sort | uniq > data/local/lm/vocab.txt
+
 # prepare the dictionary using CMUdict and Sequitur
 prep_dict.sh \
   --nj "$train_jobs" --cmd "$train_cmd" \
