@@ -295,19 +295,19 @@ if [ ! -f $nnet_dir/final.mdl ]; then
     --num-hidden-layers 4 \
     --pnorm-input-dim 2000 --pnorm-output-dim 400 \
     --cmd "$decode_cmd" \
-    data/train_clean_100 data/lang exp/tri3B_ali $nnet_dir
+    data/train_clean_100 data/lang exp/tri3B_ali $nnet_dir || exit 1
 fi
 
 
 steps/nnet2/decode.sh \
   --nj "decode_jobs" --cmd "$decode_cmd" \
   --transform-dir exp/tri3/decode \
-  exp/tri3/graph data/train_clean_100 $nnet_dir/decode
+  exp/tri3/graph data/train_clean_100 $nnet_dir/decode || exit 1
 
 steps/lmrescore.sh \
   --cmd "$decode_cmd" \
-  data/lang data/train_clean_100 $nnet_dir/decode
+  data/lang data/train_clean_100 $nnet_dir/decode || exit 1
 
 steps/lmresecore_const_arpa.sh \
   --cmd "$decode_cmd" \
-  data/lang data/train_clean_100 $nnet_dir/decode
+  data/lang data/train_clean_100 $nnet_dir/decode || exit 1
