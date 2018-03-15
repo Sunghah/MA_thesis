@@ -95,7 +95,7 @@ steps/compute_cmvn_stats.sh \
 
 # train a monophone system with train-clean-100 (29k utterances, 100 hours)
 steps/train_mono.sh \
-  --boost-silence 1.25 --nj "$train_jobs" --cmd "$train_cmd"\
+  --boost-silence 1.25 --nj "$train_jobs" --cmd "$train_cmd" \
   data/train_clean_100 data/lang_nosp exp/mono
 
 # decode using the monophone model ("nosp" = no silence prior)
