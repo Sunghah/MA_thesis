@@ -100,6 +100,7 @@ steps/train_mono.sh \
     steps/decode.sh \
       --nj "$decode_jobs" --cmd "$decode_cmd" \
       exp/mono/graph_nosp_tgsmall data/$test exp/mono/decode_nosp_tgsmall_$test
+  done
 )&
 
 steps/align_si.sh \
