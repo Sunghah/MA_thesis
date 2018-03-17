@@ -306,8 +306,8 @@ steps/nnet2/decode.sh \
 
 steps/lmrescore.sh \
   --cmd "$decode_cmd" \
-  data/lang data/train_clean_100 $nnet_dir/decode || exit 1
+  data/lang_{tg,fg} data/train_clean_100 $nnet_dir/decode_{tg,fg} || exit 1
 
 steps/lmresecore_const_arpa.sh \
   --cmd "$decode_cmd" \
-  data/lang data/train_clean_100 $nnet_dir/decode || exit 1
+  data/lang_{tg,fg} data/train_clean_100 $nnet_dir/decode_{tg,fg} || exit 1
