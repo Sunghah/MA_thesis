@@ -301,8 +301,8 @@ fi
 
 steps/nnet2/decode.sh \
   --nj "decode_jobs" --cmd "$decode_cmd" \
-  --transform-dir exp/tri3/decode \
-  exp/tri3/graph data/train_clean_100 $nnet_dir/decode || exit 1
+  --transform-dir exp/tri3B/decode_tg \
+  exp/tri3B/graph data/train_clean_100 $nnet_dir/decode || exit 1
 
 steps/lmrescore.sh \
   --cmd "$decode_cmd" \
