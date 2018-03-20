@@ -300,7 +300,7 @@ fi
 
 
 steps/nnet2/decode.sh \
-  --nj "decode_jobs" --cmd "$decode_cmd" \
+  --nj "$decode_jobs" --cmd "$decode_cmd" \
   --transform-dir exp/tri3B/decode_tg \
   exp/tri3B/graph data/train_clean_100 $nnet_dir/decode || exit 1
 

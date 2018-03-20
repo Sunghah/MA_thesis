@@ -299,7 +299,7 @@ fi
 
 for test in test_clean test_other dev_clean dev_other; do
   steps/nnet2/decode.sh \
-    --nj "decode_jobs" --cmd "$decode_cmd" \
+    --nj "$decode_jobs" --cmd "$decode_cmd" \
     --transform-dir exp/tri3/decode_tgsmall_$test \
     exp/tri3/graph_tgsmall data/train_clean_100 \
     $nnet_dir/decode_tgsmall_$test || exit 1
