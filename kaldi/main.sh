@@ -309,12 +309,12 @@ for test in test_clean test_other dev_clean dev_other; do
     data/lang_test_{tgsmall,tgmed} data/train_clean_100 \
     $nnet_dir/decode_{tgsmall,tgmed}_$test || exit 1
 
-  steps/lmresecore_const_arpa.sh \
+  steps/lmrescore_const_arpa.sh \
     --cmd "$decode_cmd" \
     data/lang_test_{tgsmall,tglarge} data/train_clean_100 \
     $nnet_dir/decode_{tgsmall,tglarge}_$test || exit 1
 
-  steps/lmresecore_const_arpa.sh \
+  steps/lmrescore_const_arpa.sh \
     --cmd "$decode_cmd" \
     data/lang_test_{tgsmall,fglarge} data/train_clean_100 \
     $nnet_dir/decode_{tgsmall,fglarge}_$test || exit 1
