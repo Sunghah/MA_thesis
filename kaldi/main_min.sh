@@ -275,12 +275,12 @@ EOF
   parallel_opts="--gpu 1"
   num_threads=1
   minibatch_size=512
-  nnet_dir=exp/nnet5a_gpu
+  nnet_dir=exp/nnet_gpu
 else
   num_threads="$train_jobs"
   parallel_opts="--num-threads $num_threads"
   minibatch_size=128
-  nnet_dir=exp/nnet5a
+  nnet_dir=exp/nnet
 fi
 
 if [ ! -f $nnet_dir/final.mdl ]; then
@@ -311,3 +311,13 @@ steps/lmrescore.sh \
 steps/lmrescore_const_arpa.sh \
   --cmd "$decode_cmd" \
   data/lang_{tg,fg} data/train_clean_100 $nnet_dir/decode_{tg,fg} || exit 1
+
+
+# get scores
+score_wer.sh \
+  data/train_clean_100 exp/tri3B/graph $nnet_dir/decode_{tg,fg}
+
+# align using the nnet model
+steps/nnet2/align.sh \
+  --nj "$align_jobs" --cmd "$train_cmd" \
+  data/train_clean_100 data/lang_{tg,fg} $nnet_dir exp/nnet_ali

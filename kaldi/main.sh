@@ -273,12 +273,12 @@ EOF
   parallel_opts="--gpu 1"
   num_threads=1
   minibatch_size=512
-  nnet_dir=exp/nnet5a_gpu
+  nnet_dir=exp/nnet_gpu
 else
   num_threads="$train_jobs"
   parallel_opts="--num-threads $num_threads"
   minibatch_size=128
-  nnet_dir=exp/nnet5a
+  nnet_dir=exp/nnet
 fi
 
 if [ ! -f $nnet_dir/final.mdl ]; then
@@ -319,3 +319,20 @@ for test in test_clean test_other dev_clean dev_other; do
     data/lang_test_{tgsmall,fglarge} data/train_clean_100 \
     $nnet_dir/decode_{tgsmall,fglarge}_$test || exit 1
 done
+
+
+utils/mkgraph.sh \
+  data/lang exp/tri3 exp/tri3/graph
+
+steps/nnet2/decode.sh \
+  --nj "$decode_jobs" --cmd "$decode_cmd" \
+  exp/tri3/graph data/train_clean_100 $nnet_dir/decode || exit 1
+
+# get scores
+score_wer.sh \
+  data/train_clean_100 exp/tri3/graph $nnet_dir/decode
+
+# align using the nnet model
+steps/nnet2/align.sh \
+  --nj "$align_jobs" --cmd "$train_cmd" \
+  data/train_clean_100 data/lang $nnet_dir exp/nnet_ali
