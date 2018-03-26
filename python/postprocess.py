@@ -44,7 +44,7 @@ for idx in range(len(df)):
         depth = 1
 
         while (df.loc[idx, 'left'] != 'Start') and \
-              (df.loc[idx, 'left'] != silence and (idx-depth > -1):
+              (df.loc[idx, 'left'] != silence) and (idx-depth > -1):
 
             left = df.loc[idx-depth, 'phoneme'] # pre-boundary phone
 
