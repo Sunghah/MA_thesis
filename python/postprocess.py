@@ -20,13 +20,14 @@ df = pd.read_csv(data, dtype={'filename': str, 'left': str, 'phoneme': str,
                               'intensity_ch1': np.float64,
                               'intensity_ch2': np.float64,
                               'intensity_ch3': np.float64},
-                       na_values = ['--undefined--'])
+                       na_values = ['--undefined--'],
+                       warn_bad_lines = True)
 
 
 df['context'] = str # pre- or post-boundary
 df['depth'] = np.int # distance from SIL
 df['sil_dur'] = np.float64()
-
+lines = len(data)
 
 silence = 'SIL' # silence phone
 vowels = ['AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER',
@@ -34,16 +35,19 @@ vowels = ['AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER',
 
 
 for idx in range(len(df)):
+    print('on line #', idx, "/", lines)
+
     if df.loc[idx, 'phoneme'] == silence and \
        df.loc[idx, 'left'] != 'Start' and \
        df.loc[idx, 'right'] != 'End':
 
-        left = ''
+        left = '' # pre-boundary phone
         depth = 1
 
         while (left != silence) or (left != 'Start'):
+            left = df.loc[idx-depth, 'phoneme']
             # first two symbols, excluding lexical stress markers and B/I/E tags
-            if df.loc[idx-depth, 'phoneme'][0:2] in vowels:
+            if left[0:2] in vowels:
                 df.loc[idx-depth, 'context'] = 'Pre'
                 df.loc[idx-depth, 'depth'] = depth
                 df.loc[idx-depth, 'sil_dur'] = df.loc[idx, 'duration']
@@ -52,11 +56,13 @@ for idx in range(len(df)):
                 depth += 1
 
 
-        right = ''
+        right = '' # pre-boundary phone
         depth = 1
+
         while (right != silence) or (right != 'End'):
+            right = df.loc[idx+depth, 'phoneme']
             # first two symbols, excluding lexical stress markers and B/I/E tags
-            if df.loc[idx+depth, 'phoneme'][0:2] in vowels:
+            if right[0:2] in vowels:
                 df.loc[idx+depth, 'context'] = 'Post'
                 df.loc[idx+depth, 'depth'] = depth
                 df.loc[idx+depth, 'sil_dur'] = df.loc[idx, 'duration']
