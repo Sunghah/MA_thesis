@@ -27,7 +27,7 @@ df = pd.read_csv(data, dtype={'filename': str, 'left': str, 'phoneme': str,
 df['context'] = str # pre- or post-boundary
 df['depth'] = np.int # distance from SIL
 df['sil_dur'] = np.float64()
-lines = len(data)
+lines = len(df)
 
 silence = 'SIL' # silence phone
 vowels = ['AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER',
