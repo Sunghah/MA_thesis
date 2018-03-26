@@ -37,30 +37,34 @@ vowels = ['AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER',
 for idx in range(len(df)):
     print('on line #', idx, "/", lines)
 
-    if df.loc[idx, 'phoneme'] == silence and \
-       df.loc[idx, 'left'] != 'Start' and \
-       df.loc[idx, 'right'] != 'End':
+    phone = df.loc[idx, 'phoneme']
 
-        left = '' # pre-boundary phone
+    if phone == silence:
+
         depth = 1
 
-        while (left != silence) or (left != 'Start'):
-            left = df.loc[idx-depth, 'phoneme']
+        while (df.loc[idx, 'left'] != 'Start') and \
+              (df.loc[idx, 'left'] != silence and (idx-depth > -1):
+
+            left = df.loc[idx-depth, 'phoneme'] # pre-boundary phone
+
             # first two symbols, excluding lexical stress markers and B/I/E tags
             if left[0:2] in vowels:
                 df.loc[idx-depth, 'context'] = 'Pre'
                 df.loc[idx-depth, 'depth'] = depth
                 df.loc[idx-depth, 'sil_dur'] = df.loc[idx, 'duration']
-
                 out_df = out_df.append(df.iloc[idx-depth])
-                depth += 1
+
+            depth += 1
 
 
-        right = '' # pre-boundary phone
         depth = 1
 
-        while (right != silence) or (right != 'End'):
-            right = df.loc[idx+depth, 'phoneme']
+        while (df.loc[idx, 'right'] != 'End') and \
+              (df.loc[idx, 'right'] != silence) and (idx+depth < lines):
+
+            right = df.loc[idx+depth, 'phoneme'] # post-boundary phone
+
             # first two symbols, excluding lexical stress markers and B/I/E tags
             if right[0:2] in vowels:
                 df.loc[idx+depth, 'context'] = 'Post'
