@@ -1,3 +1,4 @@
+import sys
 import pandas as pd
 import numpy as np
 
@@ -36,15 +37,16 @@ vowels = ['AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER',
 
 for idx in range(len(df)):
     print('on line #', idx, "/", lines)
+    sys.stdout.flush()
 
     phone = df.loc[idx, 'phoneme']
 
     if phone == silence:
 
+        left = df.loc[idx, 'left']
         depth = 1
 
-        while (df.loc[idx, 'left'] != 'Start') and \
-              (df.loc[idx, 'left'] != silence) and (idx-depth > -1):
+        while ((left != 'Start') or (left != silence)) and (idx-depth > -1):
 
             left = df.loc[idx-depth, 'phoneme'] # pre-boundary phone
 
@@ -58,10 +60,10 @@ for idx in range(len(df)):
             depth += 1
 
 
+        right = df.loc[idx, 'right']
         depth = 1
 
-        while (df.loc[idx, 'right'] != 'End') and \
-              (df.loc[idx, 'right'] != silence) and (idx+depth < lines):
+        while ((right != 'End') and (right != silence)) and (idx+depth < lines):
 
             right = df.loc[idx+depth, 'phoneme'] # post-boundary phone
 
@@ -70,9 +72,9 @@ for idx in range(len(df)):
                 df.loc[idx+depth, 'context'] = 'Post'
                 df.loc[idx+depth, 'depth'] = depth
                 df.loc[idx+depth, 'sil_dur'] = df.loc[idx, 'duration']
-
                 out_df = out_df.append(df.iloc[idx+depth])
-                depth += 1
+
+            depth += 1
 
 
 out_df.to_csv('result_proc.csv', sep=',', encoding='utf-8', index=False)
