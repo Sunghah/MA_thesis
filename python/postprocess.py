@@ -46,7 +46,7 @@ for idx in range(len(df)):
 
     if phone == silence:
         # shift left up to 'SIL' or 'Start'
-        while (phone == silence) and (left != 'Start') and (idx-depth > -1):
+        while (phone != silence) and (left != 'Start') and (idx-depth > -1):
 
             if left[0:2] in vowels:
                 df.loc[idx-depth, 'context'] = 'Pre'
@@ -78,7 +78,7 @@ for idx in range(len(df)):
 
     if phone == silence:
         # shift right up to 'SIL' or 'Start'
-        while (right == silence) and (right != 'End') and (idx+depth < lines):
+        while (phone != silence) and (right != 'End') and (idx+depth < lines):
 
             if right[0:2] in vowels:
                 df.loc[idx+depth, 'context'] = 'Post'
