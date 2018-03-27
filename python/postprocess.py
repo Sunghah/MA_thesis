@@ -46,7 +46,7 @@ for idx in range(len(df)):
 
     if phone == silence:
         # shift left up to 'SIL' or 'Start'
-        while (phone != silence) and (left != 'Start') and (idx-depth > -1):
+        while (left != silence) and (left != 'Start') and (idx-depth > -1):
 
             if left[0:2] in vowels:
                 df.loc[idx-depth, 'context'] = 'Pre'
@@ -54,9 +54,7 @@ for idx in range(len(df)):
                 df.loc[idx-depth, 'sil_dur'] = df.loc[idx, 'duration']
                 preb_df = preb_df.append(df.iloc[idx-depth])
 
-            phone = df.loc[idx, 'phoneme']
-            left = df.loc[idx, 'left']
-            right = df.loc[idx, 'right']
+            left = df.loc[idx-depth, 'left']
             depth += 1
 
 
@@ -78,7 +76,7 @@ for idx in range(len(df)):
 
     if phone == silence:
         # shift right up to 'SIL' or 'Start'
-        while (phone != silence) and (right != 'End') and (idx+depth < lines):
+        while (right != silence) and (right != 'End') and (idx+depth < lines):
 
             if right[0:2] in vowels:
                 df.loc[idx+depth, 'context'] = 'Post'
@@ -86,9 +84,7 @@ for idx in range(len(df)):
                 df.loc[idx+depth, 'sil_dur'] = df.loc[idx, 'duration']
                 postb_df = postb_df.append(df.iloc[idx+depth])
 
-            phone = df.loc[idx, 'phoneme']
-            left = df.loc[idx, 'left']
-            right = df.loc[idx, 'right']
+            right = df.loc[idx+depth, 'right']
             depth += 1
 
 
