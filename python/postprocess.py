@@ -66,7 +66,7 @@ postb_df = pd.DataFrame() # output dataframe
 
 # get post-boundary phones
 for idx in range(len(df)):
-    print('on line #', idx, "/", lines)
+    print('on line #', idx+1, "/", lines)
     sys.stdout.flush()
 
     phone = df.loc[idx, 'phoneme']
