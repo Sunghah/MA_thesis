@@ -1,14 +1,22 @@
+library(devtools)
+library(ggplot2)
+library(ggthemes)
+library(gridExtra)
+
 library(lme4)
 library(lmerTest)
 library(lsmeans)
-library(ggplot2)
 library(pbkrtest)
-library(devtools)
+
 
 LC_ALL = "en_US.UTF-8"
 par(family='Times New Roman')
+#theme_update(plot.title = element_text(hjust = 0.5)) # center ggplot titles
+
 setwd("/Users/sunghah/Desktop/thesis/data")
+source("/Users/sunghah/Desktop/thesis/pub_theme.R")
 data = read.csv('preb_vowels.csv', stringsAsFactors=FALSE)
+num_obs = dim(data)[1]
 
 # ==================================================
 # Convert columns to appropriate data types
@@ -42,9 +50,9 @@ data$pitch_ch2 = as.numeric(data$pitch_ch2)
 data$pitch_ch3 = as.numeric(data$pitch_ch3)
 data$duration = data$duration * 1000 # to milliseconds
 data$sil_dur = data$sil_dur * 1000 # to milliseconds
-# ==================================================
 
-# histogram of silence duration
+# ==================================================
+# histogram of silence durations
 sil_dur.mean = mean(data$sil_dur) # add `na.rm = T` param if there's any NA value
 sil_dur.median = median(data$sil_dur)
 sil_dur.sd = sd(data$sil_dur)
@@ -52,22 +60,46 @@ sil_dur.var = var(data$sil_dur)
 sil_dur.max = max(data$sil_dur)
 sil_dur.min = min(data$sil_dur)
 
-num_obs = dim(data)[1]
-num_bins = ceiling(num_obs / 10000)
-
-hist(data$sil_dur, breaks = num_bins, col = "steelblue", border = "white",
-     main = "", xlab = "", ylab = "", xaxt = "n", yaxt = "n", 
-     xlim = c(0, 1600), ylim = c(0, 0.003), prob = TRUE)
-
-curve(dnorm(x, mean = sil_dur.mean, sd = sil_dur.sd), col = "red", lwd=2, add = T)
-xtick = seq(0, 1600, by=200); axis(side=1, at=xtick)
-ytick = seq(0, 0.003, by=0.001); axis(side=2, at=ytick)
-title("Histogram of Silence Duration with Normal Density Curve", cex.main = 1.1)
-title(xlab = "Silence Duration (ms)", ylab = "Probability", cex.lab = 1)
-mtext("N = 10000", side = 4, cex = 0.7)
-legend("right", c(paste("Mean =", round(sil_dur.mean, 2)),
-                  paste("Median =",round(sil_dur.median, 2)),
-                  paste("Std.dev. =", round(sil_dur.sd, 2)))
-              , bty = "n", cex=0.8, y.intersp=0.5)
+p = ggplot(data, aes(x=sil_dur))
+p = p + geom_histogram(aes(y=..density..), breaks=seq(0, 1500, by=50), col="white", alpha=.8)
+p = p + geom_density(col=2) + xlim(0, 1500)
+p = p + labs(title="Distribution of Silence Durations", x="duration (ms)", y="density")
+p = p + scale_color_Publication() + theme_Publication()
+p
 
 # ==================================================
+# violin plot of vowel durations
+
+p = ggplot(data, aes(x=depth, y=duration)) + geom_violin()
+p = p + geom_boxplot(width=0.1)
+#p = p + scale_x_discrete(limits=c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))
+p = p + scale_x_discrete(limits=c(1, 2, 3, 4, 5))
+p = p + labs(title="Vowel Duration by Depth", x="Depth", y="Duration (ms)")
+p = p  + scale_color_Publication() + theme_Publication()
+#p = p + coord_flip()
+p
+
+#  ==================================================
+# data with (depth > 5)
+data5 = data[ which(data$depth == 1 |
+                    data$depth == 2 |
+                    data$depth == 3 |
+                    data$depth == 4 | 
+                    data$depth == 5
+                    ), ]
+
+
+#  ==================================================
+# 
+
+
+# ==================================================
+# 
+
+
+# ==================================================
+# 
+
+
+# ==================================================
+# 
