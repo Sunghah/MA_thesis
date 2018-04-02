@@ -77,6 +77,6 @@ for idx in range(len(df)):
 
     filename = df.loc[idx, 'filename']
     spk_id = ('-').join(filename.split('-')[:2])
-    df['gender'] = gender_dict[spk_id]
+    df[idx, 'gender'] = gender_dict[spk_id]
 
 df.to_csv('postb_g_vowels.csv', sep=',', encoding='utf-8', index=False)
