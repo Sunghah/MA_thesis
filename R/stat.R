@@ -23,9 +23,9 @@ setwd("/Users/sunghah/Desktop/thesis/data")
 # ==================================================
 # ==================================================
 
+
 preb_data = '/Users/sunghah/Desktop/thesis/data/preb_vowels.csv'
 data = read.csv(preb_data, stringsAsFactors=FALSE)
-num_obs = dim(data)[1]
 
 # ==================================================
 # Convert columns to appropriate data types
@@ -120,10 +120,9 @@ mono3$speaker = as.factor(mono3$speaker)
 # ==================================================
 # histogram of silence durations
 summary(mono3$sil_dur)
-p = ggplot(mono3, aes(x=sil_dur)) +
-    geom_histogram(aes(y=..density..), breaks=seq(0, 1500, by=50), fill="#808080", col="white", alpha=0.9)
-p = p + geom_density(col=2) + xlim(0, 1500) + ylim(0, 0.004)
-p = p + labs(title="Distribution of Silence Durations", x="Duration (ms)", y="Density")
+p = ggplot(mono3, aes(x=sil_dur)) + geom_histogram(aes(y=..density..), breaks=seq(0, 1500, by=50), fill="#808080", col="white", alpha=0.9) +
+    geom_density(col=2) + xlim(0, 1500) + ylim(0, 0.004) +
+    labs(title="Distribution of Silence Durations", x="Duration (ms)", y="Density")
 p + scale_color_Publication() + theme_Publication()
 
 # ==================================================
@@ -140,52 +139,63 @@ summary(mono3$strength)
 # ==================================================
 # violin plot of vowel durations by depth
 p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    geom_boxplot(width=0.1) + labs(title="Pre-boundary Vowel Duration by Depth", x="Depth", y="Duration (ms)")
+    geom_boxplot(outlier.size=0.8, width=0.1) + labs(title="Pre-boundary Vowel Duration by Depth", x="Depth", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # violin plot of vowel durations by strength
 p = ggplot(mono3, aes(x=strength, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    geom_boxplot(width=0.1) + labs(title="Pre-boundary Vowel Duration by Strength", x="Strength", y="Duration (ms)")
+    geom_boxplot(outlier.size=0.8, width=0.1) + labs(title="Pre-boundary Vowel Duration by Strength", x="Strength", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
 # duration of each vowel by depth
 p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) + 
-    facet_wrap(~phoneme, scales="free") + geom_boxplot(width=0.1) + scale_x_discrete(limits=c(1, 2, 3)) +
+    facet_wrap(~phoneme, scales="free") + geom_boxplot(outlier.size=0.8, width=0.1) + scale_x_discrete(limits=c(1, 2, 3)) +
     labs(title="Pre-boundary Vowel Duration by Depth", x="Depth", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # duration of each vowel by strength
 p = ggplot(mono3, aes(x=strength, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~phoneme, scales="free") + geom_boxplot(width=0.1) +
+    facet_wrap(~phoneme, scales="free") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Pre-boundary Vowel Duration by Strength", x="Strength", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
 # vowel durations by depth given strength
 p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~strength, scales="fixed") + geom_boxplot(width=0.1) +
+    facet_wrap(~strength, scales="fixed") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Pre-boundary Vowel Duration by Depth Given Strength", x="Depth", y="Duration (ms)")
 p  + scale_color_Publication() + theme_Publication() # + coord_flip()
 
-# ==================================================
 # vowel durations by strength given depth
 p = ggplot(mono3, aes(x=strength, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~depth, scales="fixed") + geom_boxplot(width=0.1) +
+    facet_wrap(~depth, scales="fixed") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Pre-boundary Vowel Duration by Strength Given Depth", x="Strength", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
-# intensity by depth given strength
-mono3$meanIntensity = (mono3$intensity_ch1 + mono3$intensity_ch2 + mono3$intensity_ch3)/3
+# intensity by depth
 p = ggplot(mono3, aes(x=depth, y=intensity_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~strength, scales="fixed") + geom_boxplot(width=0.1) +
+    geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Pre-boundary Vowel Intensity by Depth", x="Depth", y="Amplitude (dB)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
+# intensity by strength
+p = ggplot(mono3, aes(x=strength, y=intensity_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Pre-boundary Vowel Intensity by Strength", x="Strength", y="Amplitude (dB)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
+# ==================================================
+# intensity by depth given strength
+p = ggplot(mono3, aes(x=depth, y=intensity_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_wrap(~strength, scales="fixed") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Pre-boundary Vowel Intensity by Depth Given Strength", x="Depth", y="Amplitude (dB)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # intensity by strength given depth
-p = ggplot(mono3, aes(x=strength, y=meanIntensity)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~depth, scales="fixed") + geom_boxplot(width=0.1) +
+p = ggplot(mono3, aes(x=strength, y=intensity_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_wrap(~depth, scales="fixed") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Pre-boundary Vowel Intensity by Strength Given Depth", x="Strength", y="Amplitude (dB)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
@@ -193,8 +203,6 @@ p + scale_color_Publication() + theme_Publication() # + coord_flip()
 # pitch by strength given depth
 m_mono3 = mono3[ which(mono3$gender == "m"), ]
 f_mono3 = mono3[ which(mono3$gender == "f"), ]
-m_mono3$meanPitch = (m_mono3$pitch_ch1 + m_mono3$pitch_ch2 + m_mono3$pitch_ch3) / 3
-f_mono3$meanPitch = (f_mono3$pitch_ch1 + f_mono3$pitch_ch2 + f_mono3$pitch_ch3) / 3
 mf_mono3 = rbind(m_mono3, f_mono3)
 
 # rename columns and levels to make it look better when facetted
@@ -203,15 +211,29 @@ names(mf_mono3)[names(mf_mono3)=="gender"] = "Gender"
 levels(mf_mono3$Gender) = c("Female", "Male")
 levels(mf_mono3$Depth) = seq(1, 151, 1)
 
+# ==================================================
+# pitch by strength
+p = ggplot(mf_mono3, aes(x=strength, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Pre-boundary Vowel Pitch by Strength", x="Strength", y="Frequency (Hz)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
+# pitch by depth
+p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Pre-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
+# ==================================================
 # pitch by depth given strength
-p = ggplot(mf_mono3, aes(x=strength, y=meanPitch)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_grid(Gender ~ Depth, scales="free", labeller=label_both) + geom_boxplot(width=0.1) +
+p = ggplot(mf_mono3, aes(x=strength, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_grid(Gender ~ Depth, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Pre-boundary Vowel Pitch by Depth Given Strength", x="Depth", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # pitch by strength given depth
-p = ggplot(mf_mono3, aes(x=Depth, y=meanPitch)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_grid(Gender ~ strength, scales="free", labeller=label_both) + geom_boxplot(width=0.1) +
+p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_grid(Gender ~ strength, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Pre-boundary Vowel Pitch by Strength Given Depth", x="Strength", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
@@ -224,6 +246,7 @@ fit1.lmer = lmer(duration ~ strength * depth + (1|speaker), mono3)
 coef(fit1.lmer)
 anova(fit1.lmer)
 lsmeans(fit1.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit1.lmer, pairwise~strength|depth, adjust="tukey")
 
 df = as.data.frame( Effect(c("depth", "strength"), fit1.lmer) )
 df$Depth = factor(df$depth, levels = c(1, 2, 3))
@@ -246,10 +269,11 @@ p + scale_color_Publication() + theme_Publication()
 # DV: intensity
 # IV: strength, depth
 # Random factor: filename (speaker ID)
-fit2.lmer = lmer(meanIntensity ~ strength * depth + (1|speaker), mono3)
+fit2.lmer = lmer(intensity_ch2 ~ strength * depth + (1|speaker), mono3)
 coef(fit2.lmer)
 anova(fit2.lmer)
 lsmeans(fit2.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit2.lmer, pairwise~strength|depth, adjust="tukey")
 
 df = as.data.frame( Effect(c("depth", "strength"), fit2.lmer) )
 df$Depth = factor(df$depth, levels = c(1, 2, 3))
@@ -272,15 +296,17 @@ p + scale_color_Publication() + theme_Publication()
 # DV: pitch (male & female)
 # IV: strength, depth
 # Random factor: filename (speaker ID)
-fit3.lmer = lmer(meanPitch ~ strength * depth + (1|speaker), m_mono3)
+fit3.lmer = lmer(pitch_ch2 ~ strength * depth + (1|speaker), m_mono3)
 coef(fit3.lmer)
 anova(fit3.lmer)
 lsmeans(fit3.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit3.lmer, pairwise~strength|depth, adjust="tukey")
 
-fit4.lmer = lmer(meanPitch ~ strength * depth + (1|speaker), f_mono3)
+fit4.lmer = lmer(pitch_ch2 ~ strength * depth + (1|speaker), f_mono3)
 coef(fit4.lmer)
 anova(fit4.lmer)
 lsmeans(fit4.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit4.lmer, pairwise~strength|depth, adjust="tukey")
 
 df1 = as.data.frame( Effect(c("depth", "strength"), fit3.lmer) )
 df1$Depth = factor(df1$depth, levels = c(1, 2, 3))
@@ -313,7 +339,7 @@ mono3$norm_f1_ch2 = normLobanov(mono3$f1_ch2)
 mono3$norm_f2_ch2 = normLobanov(mono3$f2_ch2)
 
 bins = 5
-size = 1.2
+size = 1
 
 p = ggplot(mono3, aes(norm_f2_ch2, norm_f1_ch2, color=phoneme)) + stat_density2d(bins=bins, size=size) +
   facet_grid(~strength, scales="fixed") + scale_x_reverse() + scale_y_reverse() +
@@ -335,7 +361,6 @@ p + scale_color_Publication() + theme_Publication()
 
 postb_data = '/Users/sunghah/Desktop/thesis/data/postb_vowels.csv'
 data = read.csv(postb_data, stringsAsFactors=FALSE)
-num_obs = dim(data)[1]
 
 # ==================================================
 # Convert columns to appropriate data types
@@ -412,7 +437,7 @@ mono3 = mono[ which(mono$depth == 1 |
 remove(mono)
 
 # exclude those with '_E' tag since they are pre-boundary
-mono3 = mono3[ which(substr(mono3$phoneme, 4, 5) != '_E'), ]
+mono3 = mono3[ which( substr(mono3$phoneme, 4, 5) != '_E' ), ]
 
 # truncate stress markers and '_B', '_I' tags
 mono3$phoneme = substr(mono3$phoneme, 1, 2)
@@ -441,51 +466,63 @@ summary(mono3$strength)
 # ==================================================
 # violin plot of vowel durations by depth
 p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    geom_boxplot(width=0.1) + labs(title="Post-boundary Vowel Duration by Depth", x="Depth", y="Duration (ms)")
+    geom_boxplot(outlier.size=0.8, width=0.1) + labs(title="Post-boundary Vowel Duration by Depth", x="Depth", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # violin plot of vowel durations by strength
 p = ggplot(mono3, aes(x=strength, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    geom_boxplot(width=0.1) + labs(title="Post-boundary Vowel Duration by Strength", x="Strength", y="Duration (ms)")
+    geom_boxplot(outlier.size=0.8, width=0.1) + labs(title="Post-boundary Vowel Duration by Strength", x="Strength", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
 # duration of each vowel by depth
 p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) + 
-    facet_wrap(~phoneme, scales="free") + geom_boxplot(width=0.1) + scale_x_discrete(limits=c(1, 2, 3)) +
+    facet_wrap(~phoneme, scales="free") + geom_boxplot(outlier.size=0.8, width=0.1) + scale_x_discrete(limits=c(1, 2, 3)) +
     labs(title="Post-boundary Vowel Duration by Depth", x="Depth", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # duration of each vowel by strength
 p = ggplot(mono3, aes(x=strength, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~phoneme, scales="free") + geom_boxplot(width=0.1) +
+    facet_wrap(~phoneme, scales="free") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Post-boundary Vowel Duration by Strength", x="Strength", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
 # vowel durations by depth given strength
 p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~strength, scales="fixed") + geom_boxplot(width=0.1) +
+    facet_wrap(~strength, scales="fixed") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Post-boundary Vowel Duration by Depth Given Strength", x="Depth", y="Duration (ms)")
 p  + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # vowel durations by strength given depth
 p = ggplot(mono3, aes(x=strength, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~depth, scales="fixed") + geom_boxplot(width=0.1) +
+    facet_wrap(~depth, scales="fixed") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Post-boundary Vowel Duration by Strength Given Depth", x="Strength", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
-# intensity by depth given strength
-mono3$meanIntensity = (mono3$intensity_ch1 + mono3$intensity_ch2 + mono3$intensity_ch3)/3
+# intensity by depth
 p = ggplot(mono3, aes(x=depth, y=intensity_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~strength, scales="fixed") + geom_boxplot(width=0.1) +
+    geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Post-boundary Vowel Intensity by Depth", x="Depth", y="Amplitude (dB)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
+# intensity by strength
+p = ggplot(mono3, aes(x=strength, y=intensity_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Post-boundary Vowel Intensity by Strength", x="Strength", y="Amplitude (dB)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
+# ==================================================
+# intensity by depth given strength
+p = ggplot(mono3, aes(x=depth, y=intensity_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_wrap(~strength, scales="fixed") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Post-boundary Vowel Intensity by Depth Given Strength", x="Depth", y="Amplitude (dB)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # intensity by strength given depth
-p = ggplot(mono3, aes(x=strength, y=meanIntensity)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_wrap(~depth, scales="fixed") + geom_boxplot(width=0.1) +
+p = ggplot(mono3, aes(x=strength, y=intensity_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_wrap(~depth, scales="fixed") + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Post-boundary Vowel Intensity by Strength Given Depth", x="Strength", y="Amplitude (dB)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
@@ -493,27 +530,37 @@ p + scale_color_Publication() + theme_Publication() # + coord_flip()
 # pitch by strength given depth
 m_mono3 = mono3[ which(mono3$gender == "m"), ]
 f_mono3 = mono3[ which(mono3$gender == "f"), ]
-m_mono3$meanPitch = (m_mono3$pitch_ch1 + m_mono3$pitch_ch2 + m_mono3$pitch_ch3) / 3
-f_mono3$meanPitch = (f_mono3$pitch_ch1 + f_mono3$pitch_ch2 + f_mono3$pitch_ch3) / 3
 mf_mono3 = rbind(m_mono3, f_mono3)
 
 # rename columns and levels to make it look better when facetted
-names(mf_mono3)[names(mf_mono3)=="strength"] = "Strength"
 names(mf_mono3)[names(mf_mono3)=="depth"] = "Depth"
 names(mf_mono3)[names(mf_mono3)=="gender"] = "Gender"
-levels(mf_mono3$Strength) = c("Weak", "Medium", "Strong")
-levels(mf_mono3$Depth) = seq(1, 151, 1)
 levels(mf_mono3$Gender) = c("Female", "Male")
+levels(mf_mono3$Depth) = seq(1, 151, 1)
 
+# ==================================================
+# pitch by strength
+p = ggplot(mf_mono3, aes(x=strength, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Post-boundary Vowel Pitch by Strength", x="Strength", y="Frequency (Hz)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
+# pitch by depth
+p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Post-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
+# ==================================================
 # pitch by depth given strength
-p = ggplot(mf_mono3, aes(x=Strength, y=meanPitch)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_grid(Gender ~ Depth, scales="free", labeller=label_both) + geom_boxplot(width=0.1) +
+p = ggplot(mf_mono3, aes(x=strength, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_grid(Gender ~ Depth, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Post-boundary Vowel Pitch by Depth Given Strength", x="Depth", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # pitch by strength given depth
-p = ggplot(mf_mono3, aes(x=Depth, y=meanPitch)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_grid(Gender ~ Strength, scales="free", labeller=label_both) + geom_boxplot(width=0.1) +
+p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+    facet_grid(Gender ~ strength, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Post-boundary Vowel Pitch by Strength Given Depth", x="Strength", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
@@ -526,12 +573,13 @@ fit1.lmer = lmer(duration ~ strength * depth + (1|speaker), mono3)
 coef(fit1.lmer)
 anova(fit1.lmer)
 lsmeans(fit1.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit1.lmer, pairwise~strength|depth, adjust="tukey")
 
 df = as.data.frame( Effect(c("depth", "strength"), fit1.lmer) )
 df$Depth = factor(df$depth, levels = c(1, 2, 3))
 df$Strength = factor(df$strength, levels = c("Weak", "Medium", "Strong"))
 
-p = ggplot(df, aes(Depth, fit, group=Strength)) + geom_point() + geom_line(color="#808080") +
+p = ggplot(df, aes(Depth, fit, group=Strength)) + geom_point() + geom_line(color="#808080") + 
     facet_wrap(~Strength, scales="fixed", labeller=labeller(Strength=label_both)) +
     geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
     labs(title="Post-boundary Vowel Duration by Depth Given Strength", x = "Depth", y = "Duration (ms)")
@@ -548,10 +596,11 @@ p + scale_color_Publication() + theme_Publication()
 # DV: intensity
 # IV: strength, depth
 # Random factor: filename (speaker ID)
-fit2.lmer = lmer(meanIntensity ~ strength * depth + (1|speaker), mono3)
+fit2.lmer = lmer(intensity_ch2 ~ strength * depth + (1|speaker), mono3)
 coef(fit2.lmer)
 anova(fit2.lmer)
 lsmeans(fit2.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit2.lmer, pairwise~strength|depth, adjust="tukey")
 
 df = as.data.frame( Effect(c("depth", "strength"), fit2.lmer) )
 df$Depth = factor(df$depth, levels = c(1, 2, 3))
@@ -574,28 +623,29 @@ p + scale_color_Publication() + theme_Publication()
 # DV: pitch (male & female)
 # IV: strength, depth
 # Random factor: filename (speaker ID)
-fit3.lmer = lmer(meanPitch ~ strength * depth + (1|speaker), m_mono3)
+fit3.lmer = lmer(pitch_ch2 ~ strength * depth + (1|speaker), m_mono3)
 coef(fit3.lmer)
 anova(fit3.lmer)
 lsmeans(fit3.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit3.lmer, pairwise~strength|depth, adjust="tukey")
 
-fit4.lmer = lmer(meanPitch ~ strength * depth + (1|speaker), f_mono3)
+fit4.lmer = lmer(pitch_ch2 ~ strength * depth + (1|speaker), f_mono3)
 coef(fit4.lmer)
 anova(fit4.lmer)
 lsmeans(fit4.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit4.lmer, pairwise~strength|depth, adjust="tukey")
 
 df1 = as.data.frame( Effect(c("depth", "strength"), fit3.lmer) )
-df1$Gender = "Male"
 df1$Depth = factor(df1$depth, levels = c(1, 2, 3))
 df1$Strength = factor(df1$strength, levels = c("Weak", "Medium", "Strong"))
+df1$Gender = "Male"
 
 df2 = as.data.frame( Effect(c("depth", "strength"), fit4.lmer) )
-df2$Gender = "Female"
 df2$Depth = factor(df2$depth, levels = c(1, 2, 3))
 df2$Strength = factor(df2$strength, levels = c("Weak", "Medium", "Strong"))
+df2$Gender = "Female"
 
 df = rbind(df1, df2)
-df$Gender = factor(df$Gender, levels = c("Female", "Male"))
 
 p = ggplot(df, aes(Depth, fit, group=Strength)) + geom_point() + geom_line(color="#808080") +
     facet_grid(Gender~Strength, scales="free", labeller=label_both) +
@@ -603,9 +653,9 @@ p = ggplot(df, aes(Depth, fit, group=Strength)) + geom_point() + geom_line(color
     labs(title="Post-boundary Vowel Pitch by Depth Given Strength", x="Depth", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication()
 
-p = ggplot(df, aes(Strength, fit, group=Depth)) + geom_point() + geom_line(color="#808080") + 
-    facet_grid(Gender~Depth, scales="free", labeller=label_both) +
+p = ggplot(df, aes(Strength, fit, group=Depth)) + geom_point() + geom_line(color="#808080") +
     geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
+    facet_grid(Gender~Depth, scales="free", labeller=label_both) +
     labs(title="Post-boundary Vowel Pitch by Strength Given Depth", x="Strength", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication()
 
@@ -616,10 +666,10 @@ mono3$norm_f1_ch2 = normLobanov(mono3$f1_ch2)
 mono3$norm_f2_ch2 = normLobanov(mono3$f2_ch2)
 
 bins = 5
-size = 1.2
+size = 1
 
-p = ggplot(mono3, aes(norm_f2_ch2, norm_f1_ch2, color=phoneme)) + stat_density2d(bins=bins, size=size)
-    facet_grid(~strength, scales="fixed")+ scale_x_reverse() + scale_y_reverse() +
+p = ggplot(mono3, aes(norm_f2_ch2, norm_f1_ch2, color=phoneme)) + stat_density2d(bins=bins, size=size) +
+    facet_grid(~strength, scales="fixed") + scale_x_reverse() + scale_y_reverse() +
     labs(title="Post-boundary Vowel Contours by Strength", x="F2 (normalized)", y="F1 (normalized)")
 p + scale_color_Publication() + theme_Publication()
 
