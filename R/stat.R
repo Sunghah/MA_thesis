@@ -7,6 +7,7 @@ library(lme4)
 library(lmerTest)
 library(lsmeans)
 library(effects)
+library(phonR)
 
 LC_ALL = "en_US.UTF-8"
 par(family='Times New Roman')
@@ -63,29 +64,18 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 # ==================================================
 # exclude outliers
 # F1 & F2 outside 3 sd.'s
-data = data[ (abs(data$f1_ch1 - mean(data$f1_ch1))/sd(data$f1_ch1)) < 3, ]
-data = data[ (abs(data$f1_ch2 - mean(data$f1_ch2))/sd(data$f1_ch2)) < 3, ]
-data = data[ (abs(data$f1_ch3 - mean(data$f1_ch3))/sd(data$f1_ch3)) < 3, ]
-data = data[ (abs(data$f2_ch1 - mean(data$f2_ch1))/sd(data$f2_ch1)) < 3, ]
-data = data[ (abs(data$f2_ch2 - mean(data$f2_ch2))/sd(data$f2_ch2)) < 3, ]
-data = data[ (abs(data$f2_ch3 - mean(data$f2_ch3))/sd(data$f2_ch3)) < 3, ]
+f1_ch2.mean = mean(data$f1_ch2); f1_ch2.sd = sd(data$f1_ch2)
+f2_ch2.mean = mean(data$f2_ch2); f2_ch2.sd = sd(data$f2_ch2)
+
+data = data[ which( ((data$f1_ch2 - f1_ch2.mean)/f1_ch2.sd < 3) |
+                    ((data$f2_ch2 - f2_ch2.mean)/f2_ch2.sd < 3) ), ]
 
 # pitch outside 3 sd.'s
-m_p1.sd = sd(data$pitch_ch1[data$gender == "m"]); m_p1.mean = mean(data$pitch_ch1[data$gender == "m"])
-m_p2.sd = sd(data$pitch_ch2[data$gender == "m"]); m_p2.mean = mean(data$pitch_ch2[data$gender == "m"])
-m_p3.sd = sd(data$pitch_ch3[data$gender == "m"]); m_p3.mean = mean(data$pitch_ch3[data$gender == "m"])
-f_p1.sd = sd(data$pitch_ch1[data$gender == "f"]); f_p1.mean = mean(data$pitch_ch1[data$gender == "f"])
-f_p2.sd = sd(data$pitch_ch2[data$gender == "f"]); f_p2.mean = mean(data$pitch_ch2[data$gender == "f"])
-f_p3.sd = sd(data$pitch_ch3[data$gender == "f"]); f_p3.mean = mean(data$pitch_ch3[data$gender == "f"])
+m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
+f_p_ch2.mean = mean(data$pitch_ch2[data$gender == "f"]); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == "f"])
 
-data = data[ which( (data$gender == "m" & (data$pitch_ch1 - m_p1.mean)/m_p1.sd < 3) |
-                    (data$gender == "f" & (data$pitch_ch1 - f_p1.mean)/f_p1.sd < 3) ), ]
-
-data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p2.mean)/m_p2.sd < 3) |
-                    (data$gender == "f" & (data$pitch_ch2 - f_p2.mean)/f_p2.sd < 3) ), ]
-
-data = data[ which( (data$gender == "m" & (data$pitch_ch3 - m_p3.mean)/m_p3.sd < 3) |
-                    (data$gender == "f" & (data$pitch_ch3 - f_p3.mean)/f_p3.sd < 3) ), ]
+data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p_ch2.mean)/m_p_ch2.sd < 3) |
+                    (data$gender == "f" & (data$pitch_ch2 - f_p_ch2.mean)/f_p_ch2.sd < 3) ), ]
 
 # ==================================================
 # monopthongs (as defined in CMUDict)
@@ -98,7 +88,8 @@ mono = data[ which(substr(data$phoneme, 1, 2) == 'AA' |
                    substr(data$phoneme, 1, 2) == 'IY' |
                    substr(data$phoneme, 1, 2) == 'UH' |
                    substr(data$phoneme, 1, 2) == 'UW'
-                   ), ]
+                  ),
+           ]
 remove(data)
 
 #  ==================================================
@@ -106,11 +97,12 @@ remove(data)
 mono3 = mono[ which(mono$depth == 1 |
                     mono$depth == 2 |
                     mono$depth == 3
-                    ), ]
+                   ),
+            ]
 remove(mono)
 
 # exclude those with '_B' tag since they are post-boundary
-mono3 = mono3[ which(substr(mono3$phoneme, 4, 5) != '_B'), ]
+mono3 = mono3[ which( substr(mono3$phoneme, 4, 5) != '_B' ), ]
 
 # truncate stress markers and '_I', '_E' tags
 mono3$phoneme = substr(mono3$phoneme, 1, 2)
@@ -317,7 +309,6 @@ p + scale_color_Publication() + theme_Publication()
 # ==================================================
 # Vowel contour plot
 
-library(phonR)
 mono3$norm_f1_ch2 = normLobanov(mono3$f1_ch2)
 mono3$norm_f2_ch2 = normLobanov(mono3$f2_ch2)
 
@@ -383,50 +374,41 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 # ==================================================
 # exclude outliers
 # F1 & F2 outside 3 sd.'s
-data = data[ (abs(data$f1_ch1 - mean(data$f1_ch1))/sd(data$f1_ch1)) < 3, ]
-data = data[ (abs(data$f1_ch2 - mean(data$f1_ch2))/sd(data$f1_ch2)) < 3, ]
-data = data[ (abs(data$f1_ch3 - mean(data$f1_ch3))/sd(data$f1_ch3)) < 3, ]
-data = data[ (abs(data$f2_ch1 - mean(data$f2_ch1))/sd(data$f2_ch1)) < 3, ]
-data = data[ (abs(data$f2_ch2 - mean(data$f2_ch2))/sd(data$f2_ch2)) < 3, ]
-data = data[ (abs(data$f2_ch3 - mean(data$f2_ch3))/sd(data$f2_ch3)) < 3, ]
+f1_ch2.mean = mean(data$f1_ch2); f1_ch2.sd = sd(data$f1_ch2)
+f2_ch2.mean = mean(data$f2_ch2); f2_ch2.sd = sd(data$f2_ch2)
+
+data = data[ which( ((data$f1_ch2 - f1_ch2.mean)/f1_ch2.sd < 3) |
+                    ((data$f2_ch2 - f2_ch2.mean)/f2_ch2.sd < 3) ), ]
 
 # pitch outside 3 sd.'s
-m_p1.sd = sd(data$pitch_ch1[data$gender == "m"]); m_p1.mean = mean(data$pitch_ch1[data$gender == "m"])
-m_p2.sd = sd(data$pitch_ch2[data$gender == "m"]); m_p2.mean = mean(data$pitch_ch2[data$gender == "m"])
-m_p3.sd = sd(data$pitch_ch3[data$gender == "m"]); m_p3.mean = mean(data$pitch_ch3[data$gender == "m"])
-f_p1.sd = sd(data$pitch_ch1[data$gender == "f"]); f_p1.mean = mean(data$pitch_ch1[data$gender == "f"])
-f_p2.sd = sd(data$pitch_ch2[data$gender == "f"]); f_p2.mean = mean(data$pitch_ch2[data$gender == "f"])
-f_p3.sd = sd(data$pitch_ch3[data$gender == "f"]); f_p3.mean = mean(data$pitch_ch3[data$gender == "f"])
+m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
+f_p_ch2.mean = mean(data$pitch_ch2[data$gender == "f"]); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == "f"])
 
-data = data[ which( (data$gender == "m" & (data$pitch_ch1 - m_p1.mean)/m_p1.sd < 3) |
-                      (data$gender == "f" & (data$pitch_ch1 - f_p1.mean)/f_p1.sd < 3) ), ]
-
-data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p2.mean)/m_p2.sd < 3) |
-                      (data$gender == "f" & (data$pitch_ch2 - f_p2.mean)/f_p2.sd < 3) ), ]
-
-data = data[ which( (data$gender == "m" & (data$pitch_ch3 - m_p3.mean)/m_p3.sd < 3) |
-                      (data$gender == "f" & (data$pitch_ch3 - f_p3.mean)/f_p3.sd < 3) ), ]
+data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p_ch2.mean)/m_p_ch2.sd < 3) |
+                    (data$gender == "f" & (data$pitch_ch2 - f_p_ch2.mean)/f_p_ch2.sd < 3) ), ]
 
 # ==================================================
 # monopthongs (as defined in CMUDict)
 mono = data[ which(substr(data$phoneme, 1, 2) == 'AA' |
-                     substr(data$phoneme, 1, 2) == 'AE' |
-                     substr(data$phoneme, 1, 2) == 'AH' |
-                     substr(data$phoneme, 1, 2) == 'AO' |
-                     substr(data$phoneme, 1, 2) == 'EH' |
-                     substr(data$phoneme, 1, 2) == 'IH' |
-                     substr(data$phoneme, 1, 2) == 'IY' |
-                     substr(data$phoneme, 1, 2) == 'UH' |
-                     substr(data$phoneme, 1, 2) == 'UW'
-), ]
+                   substr(data$phoneme, 1, 2) == 'AE' |
+                   substr(data$phoneme, 1, 2) == 'AH' |
+                   substr(data$phoneme, 1, 2) == 'AO' |
+                   substr(data$phoneme, 1, 2) == 'EH' |
+                   substr(data$phoneme, 1, 2) == 'IH' |
+                   substr(data$phoneme, 1, 2) == 'IY' |
+                   substr(data$phoneme, 1, 2) == 'UH' |
+                   substr(data$phoneme, 1, 2) == 'UW'
+                  ),
+           ]
 remove(data)
 
 #  ==================================================
 # vowels with (depth >= 3)
 mono3 = mono[ which(mono$depth == 1 |
-                      mono$depth == 2 |
-                      mono$depth == 3
-), ]
+                    mono$depth == 2 |
+                    mono$depth == 3
+                   ),
+            ]
 remove(mono)
 
 # exclude those with '_E' tag since they are pre-boundary
@@ -561,7 +543,6 @@ p = ggplot(df, aes(Strength, fit, group=Depth)) + geom_point() + geom_line(color
     labs(title="Post-boundary Vowel Duration by Strength Given Depth", x = "Strength", y = "Duration (ms)")
 p + scale_color_Publication() + theme_Publication()
 
-
 # ==================================================
 # tests
 # DV: intensity
@@ -631,7 +612,6 @@ p + scale_color_Publication() + theme_Publication()
 # ==================================================
 # Vowel contour plot
 
-library(phonR)
 mono3$norm_f1_ch2 = normLobanov(mono3$f1_ch2)
 mono3$norm_f2_ch2 = normLobanov(mono3$f2_ch2)
 
