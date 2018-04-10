@@ -63,17 +63,17 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 
 # ==================================================
 # exclude outliers
-# F1 & F2 outside 3 sd.'s
 f1_ch2.mean = mean(data$f1_ch2); f1_ch2.sd = sd(data$f1_ch2)
 f2_ch2.mean = mean(data$f2_ch2); f2_ch2.sd = sd(data$f2_ch2)
 
+m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
+f_p_ch2.mean = mean(data$pitch_ch2[data$gender == "f"]); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == "f"])
+
+# F1 & F2 outside 3 sd.'s
 data = data[ which( ((data$f1_ch2 - f1_ch2.mean)/f1_ch2.sd < 3) |
                     ((data$f2_ch2 - f2_ch2.mean)/f2_ch2.sd < 3) ), ]
 
 # pitch outside 3 sd.'s
-m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
-f_p_ch2.mean = mean(data$pitch_ch2[data$gender == "f"]); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == "f"])
-
 data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p_ch2.mean)/m_p_ch2.sd < 3) |
                     (data$gender == "f" & (data$pitch_ch2 - f_p_ch2.mean)/f_p_ch2.sd < 3) ), ]
 
