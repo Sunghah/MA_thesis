@@ -130,9 +130,10 @@ p + scale_color_Publication() + theme_Publication()
 bins = bin_data(mono3$sil_dur, bins=3, binType = "quantile")
 summary(bins)
 
-mono3$strength[mono3$sil_dur < 150] = "Weak"
-mono3$strength[mono3$sil_dur >= 150 & mono3$sil_dur <= 380] = "Medium"
-mono3$strength[mono3$sil_dur > 380] = "Strong"
+mono3$strength[mono3$sil_dur <= 100] = "Weak"
+mono3$strength[mono3$sil_dur > 100 & mono3$sil_dur < 300] = "Medium"
+mono3$strength[mono3$sil_dur >= 300] = "Strong"
+
 mono3$strength = factor(mono3$strength, levels=c("Weak", "Medium", "Strong"))
 summary(mono3$strength)
 
@@ -200,7 +201,7 @@ p = ggplot(mono3, aes(x=strength, y=intensity_ch2)) + geom_violin(fill="#D3D3D3"
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
-# pitch by strength given depth
+# pitch
 m_mono3 = mono3[ which(mono3$gender == "m"), ]
 f_mono3 = mono3[ which(mono3$gender == "f"), ]
 mf_mono3 = rbind(m_mono3, f_mono3)
@@ -212,16 +213,16 @@ levels(mf_mono3$Gender) = c("Female", "Male")
 levels(mf_mono3$Depth) = seq(1, 151, 1)
 
 # ==================================================
+# pitch by depth
+p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+  facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
+  labs(title="Pre-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
 # pitch by strength
 p = ggplot(mf_mono3, aes(x=strength, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
     facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Pre-boundary Vowel Pitch by Strength", x="Strength", y="Frequency (Hz)")
-p + scale_color_Publication() + theme_Publication() # + coord_flip()
-
-# pitch by depth
-p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
-    labs(title="Pre-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
@@ -342,13 +343,13 @@ bins = 5
 size = 1
 
 p = ggplot(mono3, aes(norm_f2_ch2, norm_f1_ch2, color=phoneme)) + stat_density2d(bins=bins, size=size) +
-  facet_grid(~strength, scales="fixed") + scale_x_reverse() + scale_y_reverse() +
-  labs(title="Pre-boundary Vowel Contours by Strength", x="F2 (normalized)", y="F1 (normalized)")
+    facet_grid(~strength, scales="fixed") + scale_x_reverse() + scale_y_reverse() +
+    labs(title="Pre-boundary Vowel Contours by Strength", x="F2 (normalized)", y="F1 (normalized)")
 p + scale_color_Publication() + theme_Publication()
 
 p = ggplot(mono3, aes(norm_f2_ch2, norm_f1_ch2, color=phoneme)) + stat_density2d(bins=bins, size=size) +
-  facet_grid(~depth, scales="fixed") + scale_x_reverse() + scale_y_reverse() +
-  labs(title="Pre-boundary Vowel Contours by Depth", x="F2 (normalized)", y="F1 (normalized)")
+    facet_grid(~depth, scales="fixed") + scale_x_reverse() + scale_y_reverse() +
+    labs(title="Pre-boundary Vowel Contours by Depth", x="F2 (normalized)", y="F1 (normalized)")
 p + scale_color_Publication() + theme_Publication()
 
 
@@ -402,12 +403,12 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 f1_ch2.mean = mean(data$f1_ch2); f1_ch2.sd = sd(data$f1_ch2)
 f2_ch2.mean = mean(data$f2_ch2); f2_ch2.sd = sd(data$f2_ch2)
 
-data = data[ which( ((data$f1_ch2 - f1_ch2.mean)/f1_ch2.sd < 3) |
-                    ((data$f2_ch2 - f2_ch2.mean)/f2_ch2.sd < 3) ), ]
-
 # pitch outside 3 sd.'s
 m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
 f_p_ch2.mean = mean(data$pitch_ch2[data$gender == "f"]); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == "f"])
+
+data = data[ which( ((data$f1_ch2 - f1_ch2.mean)/f1_ch2.sd < 3) |
+                    ((data$f2_ch2 - f2_ch2.mean)/f2_ch2.sd < 3) ), ]
 
 data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p_ch2.mean)/m_p_ch2.sd < 3) |
                     (data$gender == "f" & (data$pitch_ch2 - f_p_ch2.mean)/f_p_ch2.sd < 3) ), ]
@@ -453,13 +454,10 @@ for (i in 1:(dim(mono3)[1])) {
 mono3$speaker = as.factor(mono3$speaker)
 
 # ==================================================
-# divide into 3 bins by quantiles
-bins = bin_data(mono3$sil_dur, bins=3, binType = "quantile")
-summary(bins)
-
-mono3$strength[mono3$sil_dur < 150] = "Weak"
-mono3$strength[mono3$sil_dur >= 150 & mono3$sil_dur <= 380] = "Medium"
-mono3$strength[mono3$sil_dur > 380] = "Strong"
+# divide into 3 bins by silence duration
+mono3$strength[mono3$sil_dur < 100] = "Weak"
+mono3$strength[mono3$sil_dur >= 100 & mono3$sil_dur <= 300] = "Medium"
+mono3$strength[mono3$sil_dur > 300] = "Strong"
 mono3$strength = factor(mono3$strength, levels=c("Weak", "Medium", "Strong"))
 summary(mono3$strength)
 
@@ -527,7 +525,7 @@ p = ggplot(mono3, aes(x=strength, y=intensity_ch2)) + geom_violin(fill="#D3D3D3"
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
-# pitch by strength given depth
+# pitch
 m_mono3 = mono3[ which(mono3$gender == "m"), ]
 f_mono3 = mono3[ which(mono3$gender == "f"), ]
 mf_mono3 = rbind(m_mono3, f_mono3)
@@ -539,16 +537,16 @@ levels(mf_mono3$Gender) = c("Female", "Male")
 levels(mf_mono3$Depth) = seq(1, 151, 1)
 
 # ==================================================
+# pitch by depth
+p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
+  facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
+  labs(title="Post-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
+p + scale_color_Publication() + theme_Publication() # + coord_flip()
+
 # pitch by strength
 p = ggplot(mf_mono3, aes(x=strength, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
     facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
     labs(title="Post-boundary Vowel Pitch by Strength", x="Strength", y="Frequency (Hz)")
-p + scale_color_Publication() + theme_Publication() # + coord_flip()
-
-# pitch by depth
-p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-    facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
-    labs(title="Post-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
