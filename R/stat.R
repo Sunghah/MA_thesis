@@ -126,10 +126,7 @@ p = ggplot(mono3, aes(x=sil_dur)) + geom_histogram(aes(y=..density..), breaks=se
 p + scale_color_Publication() + theme_Publication()
 
 # ==================================================
-# divide into 3 bins by quantiles
-bins = bin_data(mono3$sil_dur, bins=3, binType = "quantile")
-summary(bins)
-
+# divide into 3 bins
 mono3$strength[mono3$sil_dur <= 100] = "Weak"
 mono3$strength[mono3$sil_dur > 100 & mono3$sil_dur < 300] = "Medium"
 mono3$strength[mono3$sil_dur >= 300] = "Strong"
@@ -455,10 +452,11 @@ for (i in 1:(dim(mono3)[1])) {
 mono3$speaker = as.factor(mono3$speaker)
 
 # ==================================================
-# divide into 3 bins by silence duration
-mono3$strength[mono3$sil_dur < 100] = "Weak"
-mono3$strength[mono3$sil_dur >= 100 & mono3$sil_dur <= 300] = "Medium"
-mono3$strength[mono3$sil_dur > 300] = "Strong"
+# divide into 3 bins
+mono3$strength[mono3$sil_dur <= 100] = "Weak"
+mono3$strength[mono3$sil_dur > 100 & mono3$sil_dur < 300] = "Medium"
+mono3$strength[mono3$sil_dur >= 300] = "Strong"
+
 mono3$strength = factor(mono3$strength, levels=c("Weak", "Medium", "Strong"))
 summary(mono3$strength)
 
