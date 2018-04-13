@@ -1,4 +1,3 @@
-library(mltools)
 library(devtools)
 library(ggplot2)
 library(ggthemes)
@@ -63,17 +62,18 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 
 # ==================================================
 # exclude outliers
-f1_ch2.mean = mean(data$f1_ch2); f1_ch2.sd = sd(data$f1_ch2)
-f2_ch2.mean = mean(data$f2_ch2); f2_ch2.sd = sd(data$f2_ch2)
+# get mean and sd of intensity
+int_ch2.mean = mean(data$int_ch2); int_ch2.sd = sd(data$int_ch2)
 
+# get mean and sd of male & female pitch
 m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
 f_p_ch2.mean = mean(data$pitch_ch2[data$gender == "f"]); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == "f"])
 
-# F1 & F2 outside 3 sd.'s
-data = data[ which( ((data$f1_ch2 - f1_ch2.mean)/f1_ch2.sd < 3) |
-                    ((data$f2_ch2 - f2_ch2.mean)/f2_ch2.sd < 3) ), ]
+# filter out intensity outside 3 sd.'s
+data = data[ which( ((data$intensity_ch2 - int_ch2.mean)/int_ch2.sd < 3) |
+                    ((data$intensity_ch2 - int_ch2.mean)/int_ch2.sd < 3) ), ]
 
-# pitch outside 3 sd.'s
+# filter out pitch outside 3 sd.'s
 data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p_ch2.mean)/m_p_ch2.sd < 3) |
                     (data$gender == "f" & (data$pitch_ch2 - f_p_ch2.mean)/f_p_ch2.sd < 3) ), ]
 
@@ -150,7 +150,7 @@ p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
 # duration of each vowel by depth
-p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) + 
+p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
     facet_wrap(~phoneme, scales="free") + geom_boxplot(outlier.size=0.8, width=0.1) + scale_x_discrete(limits=c(1, 2, 3)) +
     labs(title="Pre-boundary Vowel Duration by Depth", x="Depth", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
@@ -253,7 +253,7 @@ df = as.data.frame( Effect(c("depth", "strength"), fit1.lmer) )
 df$Depth = factor(df$depth, levels = c(1, 2, 3))
 df$Strength = factor(df$strength, levels = c("Weak", "Medium", "Strong"))
 
-p = ggplot(df, aes(Depth, fit, group=Strength)) + geom_point() + geom_line(color="#808080") + 
+p = ggplot(df, aes(Depth, fit, group=Strength)) + geom_point() + geom_line(color="#808080") +
     facet_wrap(~Strength, scales="fixed", labeller=labeller(Strength=label_both)) +
     geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
     labs(title="Pre-boundary Vowel Duration by Depth Given Strength", x = "Depth", y = "Duration (ms)")
@@ -399,17 +399,18 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 
 # ==================================================
 # exclude outliers
-# F1 & F2 outside 3 sd.'s
-f1_ch2.mean = mean(data$f1_ch2); f1_ch2.sd = sd(data$f1_ch2)
-f2_ch2.mean = mean(data$f2_ch2); f2_ch2.sd = sd(data$f2_ch2)
+# get mean and sd of intensity
+int_ch2.mean = mean(data$int_ch2); int_ch2.sd = sd(data$int_ch2)
 
-# pitch outside 3 sd.'s
+# get mean and sd of male & female pitch
 m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
 f_p_ch2.mean = mean(data$pitch_ch2[data$gender == "f"]); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == "f"])
 
-data = data[ which( ((data$f1_ch2 - f1_ch2.mean)/f1_ch2.sd < 3) |
-                    ((data$f2_ch2 - f2_ch2.mean)/f2_ch2.sd < 3) ), ]
+# filter out intensity outside 3 sd.'s
+data = data[ which( ((data$intensity_ch2 - int_ch2.mean)/int_ch2.sd < 3) |
+                    ((data$intensity_ch2 - int_ch2.mean)/int_ch2.sd < 3) ), ]
 
+# filter out pitch outside 3 sd.'s
 data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p_ch2.mean)/m_p_ch2.sd < 3) |
                     (data$gender == "f" & (data$pitch_ch2 - f_p_ch2.mean)/f_p_ch2.sd < 3) ), ]
 
@@ -474,7 +475,7 @@ p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # ==================================================
 # duration of each vowel by depth
-p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) + 
+p = ggplot(mono3, aes(x=depth, y=duration)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
     facet_wrap(~phoneme, scales="free") + geom_boxplot(outlier.size=0.8, width=0.1) + scale_x_discrete(limits=c(1, 2, 3)) +
     labs(title="Post-boundary Vowel Duration by Depth", x="Depth", y="Duration (ms)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
@@ -577,7 +578,7 @@ df = as.data.frame( Effect(c("depth", "strength"), fit1.lmer) )
 df$Depth = factor(df$depth, levels = c(1, 2, 3))
 df$Strength = factor(df$strength, levels = c("Weak", "Medium", "Strong"))
 
-p = ggplot(df, aes(Depth, fit, group=Strength)) + geom_point() + geom_line(color="#808080") + 
+p = ggplot(df, aes(Depth, fit, group=Strength)) + geom_point() + geom_line(color="#808080") +
     facet_wrap(~Strength, scales="fixed", labeller=labeller(Strength=label_both)) +
     geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
     labs(title="Post-boundary Vowel Duration by Depth Given Strength", x = "Depth", y = "Duration (ms)")
