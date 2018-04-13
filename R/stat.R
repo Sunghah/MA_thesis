@@ -63,7 +63,7 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 # ==================================================
 # exclude outliers
 # get mean and sd of intensity
-int_ch2.mean = mean(data$int_ch2); int_ch2.sd = sd(data$int_ch2)
+int_ch2.mean = mean(data$intensity_ch2); int_ch2.sd = sd(data$intensity_ch2)
 
 # get mean and sd of male & female pitch
 m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
@@ -400,7 +400,7 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 # ==================================================
 # exclude outliers
 # get mean and sd of intensity
-int_ch2.mean = mean(data$int_ch2); int_ch2.sd = sd(data$int_ch2)
+int_ch2.mean = mean(data$intensity_ch2); int_ch2.sd = sd(data$intensity_ch2)
 
 # get mean and sd of male & female pitch
 m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
