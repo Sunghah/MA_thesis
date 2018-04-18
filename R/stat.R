@@ -1,3 +1,4 @@
+#install.packages(c('devtools', 'ggplot2', 'ggthemes', 'gridExtra', 'lme4', 'lmerTest', 'lsmeans', 'efects', 'phonR'))
 library(devtools)
 library(ggplot2)
 library(ggthemes)
@@ -96,7 +97,7 @@ remove(data)
 # vowels with (depth >= 3)
 mono3 = mono[ which(mono$depth == 1 |
                     mono$depth == 2 |
-                    mono$depth == 3
+                    mono$depth == 3 
                    ),
             ]
 remove(mono)
@@ -108,6 +109,7 @@ mono3 = mono3[ which( substr(mono3$phoneme, 4, 5) != '_B' ), ]
 mono3$phoneme = substr(mono3$phoneme, 1, 2)
 mono3$phoneme = as.factor(mono3$phoneme)
 summary(mono3$phoneme)
+
 
 # tag speaker ID's
 mono3$filename = as.character(mono3$filename)
@@ -212,8 +214,8 @@ levels(mf_mono3$Depth) = seq(1, 151, 1)
 # ==================================================
 # pitch by depth
 p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-  facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
-  labs(title="Pre-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
+    facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Pre-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # pitch by strength
@@ -261,6 +263,35 @@ p = ggplot(df, aes(Strength, fit, group=Depth)) + geom_point() + geom_line(color
     geom_errorbar(aes(ymin=lower, ymax=upper), width=0.5) +
     labs(title="Pre-boundary Vowel Duration by Strength Given Depth", x = "Strength", y = "Duration (ms)")
 p + scale_color_Publication() + theme_Publication()
+
+# show random effects of speaker as an example
+ggCaterpillar = function(re) {
+  f = function(x) {
+    pv   = attr(x, "postVar")
+    cols = 1:(dim(pv)[1])
+    se   = unlist(lapply(cols, function(i) sqrt(pv[i, i, ])))
+    ord  = unlist(lapply(x, order)) + rep((0:(ncol(x) - 1)) * nrow(x), each=nrow(x))
+    pDf  = data.frame(y=unlist(x)[ord],
+                       ci=1.96*se[ord],
+                       nQQ=rep(qnorm(ppoints(nrow(x))), ncol(x)),
+                       ID=factor(rep(rownames(x), ncol(x))[ord], levels=rownames(x)[ord]),
+                       ind=gl(ncol(x), nrow(x), labels=names(x)))
+    
+    p = ggplot(pDf, aes(ID, y)) + facet_wrap(~ind, scales="free") + coord_flip()
+    p = p + geom_point(color="#009999") +
+            geom_hline(yintercept=0) +
+            geom_errorbar(aes(ymin=y-ci, ymax=y+ci), width=0, colour="black", alpha=0.8) +
+            labs(title="Speaker Random Effects on Vowel Duration", x="Levels", y="Quantiles") +
+            theme(legend.position="none") +
+            scale_color_Publication() + theme_Publication() +
+            theme(axis.ticks.y = element_blank(), axis.text.y=element_blank())
+    
+    return(p)
+  }
+  lapply(re, f)
+}
+
+ggCaterpillar(ranef(fit1.lmer, condVar=TRUE))
 
 # ==================================================
 # tests
@@ -538,8 +569,8 @@ levels(mf_mono3$Depth) = seq(1, 151, 1)
 # ==================================================
 # pitch by depth
 p = ggplot(mf_mono3, aes(x=Depth, y=pitch_ch2)) + geom_violin(fill="#D3D3D3", trim=TRUE) +
-  facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
-  labs(title="Post-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
+    facet_grid(~ Gender, scales="free", labeller=label_both) + geom_boxplot(outlier.size=0.8, width=0.1) +
+    labs(title="Post-boundary Vowel Pitch by Depth", x="Depth", y="Frequency (Hz)")
 p + scale_color_Publication() + theme_Publication() # + coord_flip()
 
 # pitch by strength
