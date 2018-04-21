@@ -9,12 +9,12 @@ library(lsmeans)
 library(effects)
 library(phonR)
 
-LC_ALL = "en_US.UTF-8"
+LC_ALL = 'en_US.UTF-8'
 par(family='Times New Roman')
 options(digits=10)
 
-source("/Users/sunghah/Desktop/thesis/pub_theme.R")
-setwd("/Users/sunghah/Desktop/thesis/data")
+source('/Users/sunghah/Desktop/thesis/pub_theme.R')
+setwd('/Users/sunghah/Desktop/thesis/data')
 
 
 # ==================================================
@@ -67,16 +67,16 @@ data$sil_dur = data$sil_dur * 1000 # to milliseconds
 int_ch2.mean = mean(data$intensity_ch2); int_ch2.sd = sd(data$intensity_ch2)
 
 # get mean and sd of male & female pitch
-m_p_ch2.mean = mean(data$pitch_ch2[data$gender == "m"]); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == "m"])
-f_p_ch2.mean = mean(data$pitch_ch2[data$gender == "f"]); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == "f"])
+m_p_ch2.mean = mean(data$pitch_ch2[data$gender == 'm']); m_p_ch2.sd = sd(data$pitch_ch2[data$gender == 'm'])
+f_p_ch2.mean = mean(data$pitch_ch2[data$gender == 'f']); f_p_ch2.sd = sd(data$pitch_ch2[data$gender == 'f'])
 
 # filter out intensity outside 3 sd.'s
 data = data[ which( ((data$intensity_ch2 - int_ch2.mean)/int_ch2.sd < 3) |
                     ((data$intensity_ch2 - int_ch2.mean)/int_ch2.sd < 3) ), ]
 
 # filter out pitch outside 3 sd.'s
-data = data[ which( (data$gender == "m" & (data$pitch_ch2 - m_p_ch2.mean)/m_p_ch2.sd < 3) |
-                    (data$gender == "f" & (data$pitch_ch2 - f_p_ch2.mean)/f_p_ch2.sd < 3) ), ]
+data = data[ which( (data$gender == 'm' & (data$pitch_ch2 - m_p_ch2.mean)/m_p_ch2.sd < 3) |
+                    (data$gender == 'f' & (data$pitch_ch2 - f_p_ch2.mean)/f_p_ch2.sd < 3) ), ]
 
 # ==================================================
 # monopthongs (as defined in CMUDict)
@@ -323,8 +323,15 @@ p + scale_color_Publication() + theme_Publication()
 # ==================================================
 # tests
 # DV: pitch (male & female)
-# IV: strength, depth
+# IV: strength, depth, gender
 # Random factor: filename (speaker ID)
+fit3.0.lmer = lmer(pitch_ch2 ~ strength * depth + gender + (1|speaker), mono3)
+coef(fit3.0.lmer)
+anova(fit3.0.lmer)
+lsmeans(fit3.0.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit3.0.lmer, pairwise~strength|depth, adjust="tukey")
+
+# by gender
 fit3.lmer = lmer(pitch_ch2 ~ strength * depth + (1|speaker), m_mono3)
 coef(fit3.lmer)
 anova(fit3.lmer)
@@ -649,8 +656,15 @@ p + scale_color_Publication() + theme_Publication()
 # ==================================================
 # tests
 # DV: pitch (male & female)
-# IV: strength, depth
+# IV: strength, depth, gender
 # Random factor: filename (speaker ID)
+fit3.0.lmer = lmer(pitch_ch2 ~ strength * depth + gender + (1|speaker), mono3)
+coef(fit3.0.lmer)
+anova(fit3.0.lmer)
+lsmeans(fit3.0.lmer, pairwise~depth|strength, adjust="tukey")
+lsmeans(fit3.0.lmer, pairwise~strength|depth, adjust="tukey")
+
+# by gender
 fit3.lmer = lmer(pitch_ch2 ~ strength * depth + (1|speaker), m_mono3)
 coef(fit3.lmer)
 anova(fit3.lmer)
